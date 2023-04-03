@@ -70,7 +70,63 @@ def gradcheck_naive(f, x, gradientText):
 def grad_tests_negsamp(skipgram, dummy_tokens, dummy_vectors, dataset, negSamplingLossAndGradient):
     print("======Skip-Gram with negSamplingLossAndGradient======")
 
+    print("Line 73: dummy_vectors", dummy_vectors)
+    print("Line 74: dummy_tokens:",dummy_tokens)
     # first test
+    
+    """
+    About dummy_vectors:
+    The dummy_vectors array is passed as an input to the functions being tested 
+    (naiveSoftmaxLossAndGradient and negSamplingLossAndGradient). These functions
+    treat the dummy_vectors as the current state of the word embeddings during training.
+
+    The functions calculate the loss and gradients based on the dummy_vectors. The 
+    loss represents how well the model is currently performing, and the gradients 
+    are used to update the word embeddings in the training process.
+    
+    Since the random seed has been set, the dummy_vectors are generated consistently every 
+    time the tests are run.
+        
+    If the functions being tested are implemented correctly, they should return the 
+    expected loss and gradients when provided with the dummy_vectors. This helps ensure
+    that the functions are performing the required calculations accurately, even though
+    the dummy_vectors themselves are not meaningful word embeddings.
+    
+    dummy_tokens:
+    dummy_tokens is a dictionary that simulates a mapping between token 
+    strings (words) and their corresponding indices in the word embeddings 
+    matrix. In the getDummyObjects() function, the keys in the dummy_tokens 
+    dictionary are the token strings (in this case, "a", "b", "c", "d", "e"),
+    and the values are the indices (0, 1, 2, 3, 4) that correspond to the rows
+    in the dummy_vectors matrix.
+    
+    why dummy_tokens and dummy_vectors are needed:
+    These dummy tokens are needed for testing purposes. When testing the 
+    naiveSoftmaxLossAndGradient and negSamplingLossAndGradient functions, 
+    you need a way to simulate the mapping between words (tokens) and their 
+    corresponding word vectors. The dummy_tokens dictionary serves this purpose
+    by providing a simple and consistent mapping between a small set of token 
+    strings and their indices in the dummy_vectors matrix.
+
+    By using the dummy_tokens dictionary, you can easily look up the index of a
+    word and then access its corresponding word vector in the dummy_vectors matrix.
+    This allows you to test the functions with controlled input data, ensuring that 
+    they are implemented correctly and can handle the expected input format (i.e., a
+                                                                             mapping between words and indices)
+    when used with a real dataset or pre-trained word embeddings.
+    
+    
+    The dummy_tokens dictionary has 5 entries, one for each unique token 
+    ("a", "b", "c", "d", "e"). Similarly, the dummy_vectors matrix has 10 rows,
+    but it's important to note that only the first 5 rows are used in this context 
+    since there are only 5 unique tokens. The dummy_vectors matrix is larger (10x3) 
+    to facilitate testing other aspects of the functions, such as handling input of 
+    different sizes. However, the actual relevant part of the matrix for the token-to-index 
+    mapping contains 5 rows, which matches the number of unique tokens in the dummy_tokens
+    dictionary.
+    """
+    
+    
     output_loss, output_gradCenterVecs, output_gradOutsideVectors = \
         skipgram("c", 1, ["a", "b"], dummy_tokens, dummy_vectors[:5, :],
                  dummy_vectors[5:, :], dataset, negSamplingLossAndGradient)
@@ -177,6 +233,9 @@ def getDummyObjects():
     def dummySampleTokenIdx():
         return random.randint(0, 4)
 
+    # getRandomContext(C): A function that returns a tuple containing a randomly
+    # selected center word and a list of randomly selected context words. The 
+    # length of the list of context words is equal to 2 * C.
     def getRandomContext(C):
         tokens = ["a", "b", "c", "d", "e"]
         return tokens[random.randint(0, 4)], \
@@ -188,6 +247,61 @@ def getDummyObjects():
 
     random.seed(31415)
     np.random.seed(9265)
+    
+    """
+    About dummy_vectors:
+    The dummy_vectors array is passed as an input to the functions being tested 
+    (naiveSoftmaxLossAndGradient and negSamplingLossAndGradient). These functions
+    treat the dummy_vectors as the current state of the word embeddings during training.
+
+    The functions calculate the loss and gradients based on the dummy_vectors. The 
+    loss represents how well the model is currently performing, and the gradients 
+    are used to update the word embeddings in the training process.
+    
+    Since the random seed has been set, the dummy_vectors are generated consistently every 
+    time the tests are run.
+        
+    If the functions being tested are implemented correctly, they should return the 
+    expected loss and gradients when provided with the dummy_vectors. This helps ensure
+    that the functions are performing the required calculations accurately, even though
+    the dummy_vectors themselves are not meaningful word embeddings.
+    
+    dummy_tokens:
+    dummy_tokens is a dictionary that simulates a mapping between token 
+    strings (words) and their corresponding indices in the word embeddings 
+    matrix. In the getDummyObjects() function, the keys in the dummy_tokens 
+    dictionary are the token strings (in this case, "a", "b", "c", "d", "e"),
+    and the values are the indices (0, 1, 2, 3, 4) that correspond to the rows
+    in the dummy_vectors matrix.
+    
+    why dummy_tokens and dummy_vectors are needed:
+    These dummy tokens are needed for testing purposes. When testing the 
+    naiveSoftmaxLossAndGradient and negSamplingLossAndGradient functions, 
+    you need a way to simulate the mapping between words (tokens) and their 
+    corresponding word vectors. The dummy_tokens dictionary serves this purpose
+    by providing a simple and consistent mapping between a small set of token 
+    strings and their indices in the dummy_vectors matrix.
+
+    By using the dummy_tokens dictionary, you can easily look up the index of a
+    word and then access its corresponding word vector in the dummy_vectors matrix.
+    This allows you to test the functions with controlled input data, ensuring that 
+    they are implemented correctly and can handle the expected input format (i.e., a
+                                                                             mapping between words and indices)
+    when used with a real dataset or pre-trained word embeddings.
+    
+    
+    The dummy_tokens dictionary has 5 entries, one for each unique token 
+    ("a", "b", "c", "d", "e"). Similarly, the dummy_vectors matrix has 10 rows,
+    but it's important to note that only the first 5 rows are used in this context 
+    since there are only 5 unique tokens. The dummy_vectors matrix is larger (10x3) 
+    to facilitate testing other aspects of the functions, such as handling input of 
+    different sizes. However, the actual relevant part of the matrix for the token-to-index 
+    mapping contains 5 rows, which matches the number of unique tokens in the dummy_tokens
+    dictionary.
+    """
+    # dummy_vectors: A NumPy array containing 10 rows and 3 columns, 
+    # filled with random numbers. These rows are then normalized to have 
+    # unit length. This array simulates the word vectors for testing purposes.
     dummy_vectors = normalizeRows(np.random.randn(10, 3))
     dummy_tokens = dict([("a", 0), ("b", 1), ("c", 2), ("d", 3), ("e", 4)])
 
